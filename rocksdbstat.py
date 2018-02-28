@@ -5,7 +5,7 @@ import os
 class Statistics:
 
     def save_log(self, log):
-        matches = self.clean_log(log)
+        matches = self.get_interval_speed(log)
         new_filename = log.split('.')[0] + '_washed.csv'
         self.save_to_file(matches, new_filename)
 
@@ -16,6 +16,16 @@ class Statistics:
 
             matches = regex.findall(f.read())
         return [','.join(match) for match in matches]
+
+    def get_interval_speed(self, log):
+        regex = re.compile('Interval\swrites.*?(\d*\.\d*)\sMB\/s')
+        path = os.path.join(os.getcwd(), log)
+        with open(path, 'r') as f:
+            matches = regex.findall(f.read())
+        return matches
+
+    def generate_coordinates(self, matches):
+        pass
 
     def save_to_file(self, data, filename):
         with open(filename, 'w') as f:
