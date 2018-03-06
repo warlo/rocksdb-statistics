@@ -2,11 +2,20 @@
 import re, argparse
 import os
 
-class Statistics:
 
-    def save_log(self, log):
-        matches = self.get_interval_speed(log)
-        new_filename = log.split('.')[0] + '_washed.csv'
+class Statistics:
+    def __init__(self):
+        self.stall = 'Cumulative\sstall.*?(\d*\.\d*)\spercent'
+        self.interval_writes = 'Interval\swrites.*?(\d*\.\d*)\sMB\/s'
+
+    def save_stall(self, log):
+        matches = self.get_matches(self.stall, log)
+        new_filename = log.split('.')[0] + '_stall.csv'
+        self.save_to_file(matches, new_filename)
+
+    def save_interval_writes(self, log):
+        matches = self.get_matches(self.interval_writes, log)
+        new_filename = log.split('.')[0] + '_interval.csv'
         self.save_to_file(matches, new_filename)
 
     def clean_log(self, log):
@@ -17,8 +26,8 @@ class Statistics:
             matches = regex.findall(f.read())
         return [','.join(match) for match in matches]
 
-    def get_interval_speed(self, log):
-        regex = re.compile('Interval\swrites.*?(\d*\.\d*)\sMB\/s')
+    def get_matches(self, regex, log):
+        regex = re.compile(regex)
         path = os.path.join(os.getcwd(), log)
         with open(path, 'r') as f:
             matches = regex.findall(f.read())
@@ -37,4 +46,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
     s = Statistics()
     log = args.log
-    s.save_log(log)
+    s.save_interval_writes(log)
+    s.save_stall(log)
