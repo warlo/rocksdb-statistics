@@ -7,15 +7,21 @@ class Statistics:
     def __init__(self):
         self.stall = 'Cumulative\sstall.*?(\d*\.\d*)\spercent'
         self.interval_writes = 'Interval\swrites.*?(\d*\.\d*)\sMB\/s'
+        self.cumulative_writes = 'Cumulative\swrites.*?(\d*\.\d*)\sMB\/s'
 
     def save_stall(self, log):
         matches = self.get_matches(self.stall, log)
         new_filename = log.split('.')[0] + '_stall.csv'
         self.save_to_file(matches, new_filename)
 
+    def save_cumulative_writes(self, log):
+        matches = self.get_matches(self.cumulative_writes, log)
+        new_filename = log.split('.')[0] + '_cumulative_writes.csv'
+        self.save_to_file(matches, new_filename)
+        
     def save_interval_writes(self, log):
         matches = self.get_matches(self.interval_writes, log)
-        new_filename = log.split('.')[0] + '_interval.csv'
+        new_filename = log.split('.')[0] + '_interval_writes.csv'
         self.save_to_file(matches, new_filename)
 
     def clean_log(self, log):
