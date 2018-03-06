@@ -5,28 +5,31 @@ import os
 
 class Statistics:
     def __init__(self):
-        self.stall = 'Cumulative\sstall.*?(\d*\.\d*)\spercent'
-        self.interval_writes = 'Interval\swrites.*?(\d*\.\d*)\sMB\/s'
-        self.cumulative_writes = 'Cumulative\swrites.*?(\d*\.\d*)\sMB\/s'
+        self.interval_stall = {'regex': 'Interval\sstall.*?(\d*\.\d*)\spercent', 'suffix': '_interval_stall'}
+        self.cumulative_stall = {'regex': 'Cumulative\sstall.*?(\d*\.\d*)\spercent', 'suffix': '_cumulative_stall'}
+        self.interval_writes = {'regex': 'Interval\swrites.*?(\d*\.\d*)\sMB\/s', 'suffix': '_interval_writes'}
+        self.cumulative_writes = {'regex': 'Cumulative\swrites.*?(\d*\.\d*)\sMB\/s', 'suffix': '_cumulative_writes'}
 
-    def save_stall(self, log):
-        matches = self.get_matches(self.stall, log)
-        new_filename = log.split('.')[0] + '_stall.csv'
+    def save_statistic(self, d, log):
+        matches = self.get_matches(d['regex'], log)
+        new_filename = log.split('.')[0] + f'{d["suffix"]}.csv'
         self.save_to_file(matches, new_filename)
+
+    def save_interval_stall(self, log):
+        self.save_statistic(self.interval_stall, log)
+
+    def save_cumulative_stall(self, log):
+        self.save_statistic(self.cumulative_stall, log)
+
+    def save_interval_writes(self, log):
+        self.save_statistic(self.interval_writes, log)
 
     def save_cumulative_writes(self, log):
-        matches = self.get_matches(self.cumulative_writes, log)
-        new_filename = log.split('.')[0] + '_cumulative_writes.csv'
-        self.save_to_file(matches, new_filename)
-        
-    def save_interval_writes(self, log):
-        matches = self.get_matches(self.interval_writes, log)
-        new_filename = log.split('.')[0] + '_interval_writes.csv'
-        self.save_to_file(matches, new_filename)
+        self.save_statistic(self.cumulative_writes, log)
 
     def clean_log(self, log):
         regex = re.compile('(2018\S+).*\(([\d,\.]*)\).*\(([\d,\.]*)\).*\(([\d,\.]*)\)')
-        path = os.path.join(os.getcwd(), log)
+        path = os.path.join(os.getcwd(), 'output', log)
         with open(path, 'r') as f:
 
             matches = regex.findall(f.read())
@@ -43,8 +46,10 @@ class Statistics:
         pass
 
     def save_to_file(self, data, filename):
-        with open(filename, 'w') as f:
+        os.makedirs('output', exist_ok=True)
+        with open(f'output/{filename}', 'w') as f:
             f.writelines('\n'.join(data))
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -53,4 +58,6 @@ if __name__ == '__main__':
     s = Statistics()
     log = args.log
     s.save_interval_writes(log)
-    s.save_stall(log)
+    s.save_cumulative_writes(log)
+    s.save_interval_stall(log)
+    s.save_cumulative_stall(log)
