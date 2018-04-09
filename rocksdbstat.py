@@ -42,8 +42,8 @@ class Statistics:
             matches = regex.findall(f.read())
         return matches
 
-    def generate_coordinates(self, matches):
-        pass
+    def generate_coordinates(self, matches, step=1):
+        return [(i*step, match) for i, match in enumerate(matches)]
 
     def save_to_file(self, data, filename):
         os.makedirs('output', exist_ok=True)
