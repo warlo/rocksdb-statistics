@@ -90,12 +90,25 @@ class Statistics:
             legend = ', '.join(self.legend_list)
             f.write(f'\\legend{{{legend}}}\n')
 
-    def clear_file(self, filename):
-        open(f'output/{filename}', 'w').close()
+    def initialize_coordinate_file(self, filename):
+        axis = f"""\\begin{{axis}}[
+    title={self.base_filename},
+    xlabel={{}},
+    ylabel={{MB/s}},
+    legend style={{
+        at={{(0.5,-0.2)}},
+        anchor=north,legend columns=-1
+    }},
+    ymajorgrids=true,
+    grid style=dashed,
+]
+"""
+        with open(f'output/{filename}', 'w') as f:
+            f.write(axis)
 
     def save_all(self, log):
         self.base_filename = log.split('.')[0]
-        s.clear_file(self.coordinates_filename())
+        s.initialize_coordinate_file(self.coordinates_filename())
         s.save_interval_writes(log)
         s.save_cumulative_writes(log)
         s.save_interval_stall(log)
