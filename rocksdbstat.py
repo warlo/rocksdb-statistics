@@ -89,6 +89,7 @@ class Statistics:
         with open(f'output/{filename}', 'a') as f:
             legend = ', '.join(self.legend_list)
             f.write(f'\\legend{{{legend}}}\n')
+            f.write(f'\\end{{axis}}\n')
 
     def initialize_coordinate_file(self, filename):
         axis = f"""\\begin{{axis}}[
