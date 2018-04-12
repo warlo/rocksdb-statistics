@@ -12,8 +12,12 @@ class Statistics:
 
     def save_statistic(self, d, log):
         matches = self.get_matches(d['regex'], log)
-        new_filename = log.split('.')[0] + f'{d["suffix"]}.csv'
+        base_filename = log.split('.')[0]
+        new_filename = base_filename + f'{d["suffix"]}.csv'
+        coordinates_filename = base_filename + '_coordinates.log'
+        coordinates = self.generate_coordinates(matches)
         self.save_to_file(matches, new_filename)
+        self.save_coordinates_to_file(coordinates, coordinates_filename)
 
     def save_interval_stall(self, log):
         self.save_statistic(self.interval_stall, log)
@@ -43,12 +47,18 @@ class Statistics:
         return matches
 
     def generate_coordinates(self, matches, step=1):
-        return [(i*step, match) for i, match in enumerate(matches)]
+        return [f'({i*step},{match})' for i, match in enumerate(matches)]
 
     def save_to_file(self, data, filename):
         os.makedirs('output', exist_ok=True)
         with open(f'output/{filename}', 'w') as f:
             f.writelines('\n'.join(data))
+
+    def save_coordinates_to_file(self, data, filename):
+        os.makedirs('output', exist_ok=True)
+        with open(f'output/{filename}', 'a') as f:
+            str_data = ''.join(data)
+            f.write('\\addplot\n\tcoordinates {{ {0} }};\n'.format(str_data))
 
 
 if __name__ == '__main__':
