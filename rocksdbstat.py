@@ -5,19 +5,41 @@ import os
 
 class Statistics:
     def __init__(self):
-        self.interval_stall = {'regex': 'Interval\sstall.*?(\d*\.\d*)\spercent', 'suffix': '_interval_stall'}
-        self.cumulative_stall = {'regex': 'Cumulative\sstall.*?(\d*\.\d*)\spercent', 'suffix': '_cumulative_stall'}
-        self.interval_writes = {'regex': 'Interval\swrites.*?(\d*\.\d*)\sMB\/s', 'suffix': '_interval_writes'}
-        self.cumulative_writes = {'regex': 'Cumulative\swrites.*?(\d*\.\d*)\sMB\/s', 'suffix': '_cumulative_writes'}
+        self.interval_stall = {
+            'name': 'Interval Stall',
+            'regex': 'Interval\sstall.*?(\d*\.\d*)\spercent',
+            'suffix': '_interval_stall'
+        }
+        self.cumulative_stall = {
+            'name': 'Cumulative Stall',
+            'regex': 'Cumulative\sstall.*?(\d*\.\d*)\spercent',
+            'suffix': '_cumulative_stall'
+        }
+        self.interval_writes = {
+            'name': 'Interval Writes',
+            'regex': 'Interval\swrites.*?(\d*\.\d*)\sMB\/s',
+            'suffix': '_interval_writes'
+        }
+        self.cumulative_writes = {
+            'name': 'Cumulative Writes',
+            'regex': 'Cumulative\swrites.*?(\d*\.\d*)\sMB\/s',
+            'suffix': '_cumulative_writes'
+        }
+
+        self.legend_list = []
+        self.base_filename = ''
+
+    def coordinates_filename(self):
+        return self.base_filename + '_coordinates.log'
 
     def save_statistic(self, d, log):
         matches = self.get_matches(d['regex'], log)
-        base_filename = log.split('.')[0]
-        new_filename = base_filename + f'{d["suffix"]}.csv'
-        coordinates_filename = base_filename + '_coordinates.log'
-        coordinates = self.generate_coordinates(matches)
+        new_filename = self.base_filename + f'{d["suffix"]}.csv'
         self.save_to_file(matches, new_filename)
-        self.save_coordinates_to_file(coordinates, coordinates_filename)
+
+        coordinates = self.generate_coordinates(matches)
+        self.save_coordinates_to_file(coordinates, self.coordinates_filename())
+        self.legend_list.append(d["name"])
 
     def save_interval_stall(self, log):
         self.save_statistic(self.interval_stall, log)
@@ -54,11 +76,31 @@ class Statistics:
         with open(f'output/{filename}', 'w') as f:
             f.writelines('\n'.join(data))
 
-    def save_coordinates_to_file(self, data, filename):
+    def save_coordinates_to_file(self, data, filename, last=False):
         os.makedirs('output', exist_ok=True)
         with open(f'output/{filename}', 'a') as f:
             str_data = ''.join(data)
             f.write('\\addplot\n\tcoordinates {{ {0} }};\n'.format(str_data))
+            if last:
+                legend = ', '.join(self.legend_list)
+                f.write(f'\\legend{{{legend}}}\n')
+
+    def append_legend(self, filename):
+        with open(f'output/{filename}', 'a') as f:
+            legend = ', '.join(self.legend_list)
+            f.write(f'\\legend{{{legend}}}\n')
+
+    def clear_file(self, filename):
+        open(f'output/{filename}', 'w').close()
+
+    def save_all(self, log):
+        self.base_filename = log.split('.')[0]
+        s.clear_file(self.coordinates_filename())
+        s.save_interval_writes(log)
+        s.save_cumulative_writes(log)
+        s.save_interval_stall(log)
+        s.save_cumulative_stall(log)
+        s.append_legend(self.coordinates_filename())
 
 
 if __name__ == '__main__':
@@ -67,7 +109,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     s = Statistics()
     log = args.log
-    s.save_interval_writes(log)
-    s.save_cumulative_writes(log)
-    s.save_interval_stall(log)
-    s.save_cumulative_stall(log)
+    s.save_all(log)
