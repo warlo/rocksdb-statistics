@@ -25,6 +25,16 @@ class Statistics:
             'regex': 'Cumulative\swrites.*?(\d*\.\d*)\sMB\/s',
             'suffix': '_cumulative_writes'
         }
+        self.cumulative_compaction = {
+            'name': 'Cumulative Compaction',
+            'regex': 'Cumulative\scompaction.*?(\d*\.\d*)\sMB\/s',
+            'suffix': '_cumulative_compaction'
+        }
+        self.interval_compaction = {
+            'name': 'Interval Compaction',
+            'regex': 'Interval\scompaction.*?(\d*\.\d*)\sMB\/s',
+            'suffix': '_interval_compaction'
+        }
 
         self.legend_list = []
         self.base_filename = ''
@@ -40,18 +50,6 @@ class Statistics:
         coordinates = self.generate_coordinates(matches)
         self.save_coordinates_to_file(coordinates, self.coordinates_filename())
         self.legend_list.append(d["name"])
-
-    def save_interval_stall(self, log):
-        self.save_statistic(self.interval_stall, log)
-
-    def save_cumulative_stall(self, log):
-        self.save_statistic(self.cumulative_stall, log)
-
-    def save_interval_writes(self, log):
-        self.save_statistic(self.interval_writes, log)
-
-    def save_cumulative_writes(self, log):
-        self.save_statistic(self.cumulative_writes, log)
 
     def clean_log(self, log):
         regex = re.compile('(2018\S+).*\(([\d,\.]*)\).*\(([\d,\.]*)\).*\(([\d,\.]*)\)')
@@ -110,10 +108,12 @@ class Statistics:
     def save_all(self, log):
         self.base_filename = log.split('.')[0]
         s.initialize_coordinate_file(self.coordinates_filename())
-        s.save_interval_writes(log)
-        s.save_cumulative_writes(log)
-        s.save_interval_stall(log)
-        s.save_cumulative_stall(log)
+        s.save_statistic(self.interval_writes, log)
+        s.save_statistic(self.cumulative_writes, log)
+        s.save_statistic(self.interval_stall, log)
+        s.save_statistic(self.cumulative_stall, log)
+        s.save_statistic(self.cumulative_compaction, log)
+        s.save_statistic(self.interval_compaction, log)
         s.append_legend(self.coordinates_filename())
 
 
