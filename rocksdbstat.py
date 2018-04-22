@@ -110,10 +110,10 @@ class Statistics:
         s.initialize_coordinate_file(self.coordinates_filename())
         s.save_statistic(self.interval_writes, log)
         s.save_statistic(self.cumulative_writes, log)
-        s.save_statistic(self.interval_stall, log)
-        s.save_statistic(self.cumulative_stall, log)
-        s.save_statistic(self.cumulative_compaction, log)
+        # s.save_statistic(self.interval_stall, log)
+        # s.save_statistic(self.cumulative_stall, log)
         s.save_statistic(self.interval_compaction, log)
+        s.save_statistic(self.cumulative_compaction, log)
         s.append_legend(self.coordinates_filename())
 
 
