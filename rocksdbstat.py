@@ -94,6 +94,10 @@ class Statistics:
     title={self.base_filename},
     xlabel={{}},
     ylabel={{MB/s}},
+    ymin=0,
+    ymax=250,
+    ytick={{0,50,...,300}},
+    width=\\textwidth,
     legend style={{
         at={{(0.5,-0.2)}},
         anchor=north,legend columns=-1
