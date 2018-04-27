@@ -86,11 +86,17 @@ class Statistics:
     def append_legend(self, filename):
         with open(f'output/{filename}', 'a') as f:
             legend = ', '.join(self.legend_list)
-            f.write(f'\\legend{{{legend}}}\n')
-            f.write(f'\\end{{axis}}\n')
+            f.write(f"""
+\\legend{{{legend}}}
+\\end{{axis}}
+    \\end{{tikzpicture}}
+    \\end{{subfigure}}
+""")
 
     def initialize_coordinate_file(self, filename):
-        axis = f"""\\begin{{axis}}[
+        axis = f"""    \\begin{{subfigure}}[t]{{0.5\\textwidth}}
+    \\begin{{tikzpicture}}
+\\begin{{axis}}[
     title={self.base_filename},
     xlabel={{}},
     ylabel={{MB/s}},
