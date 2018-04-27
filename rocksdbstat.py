@@ -106,7 +106,7 @@ class Statistics:
     width=\\textwidth,
     legend style={{
         at={{(0.5,-0.2)}},
-        anchor=north,legend columns=-1
+        anchor=north,legend columns=1
     }},
     ymajorgrids=true,
     grid style=dashed,
