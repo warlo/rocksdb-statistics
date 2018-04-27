@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import re, argparse
 import os
+from itertools import accumulate
 
 
 class Statistics:
@@ -122,9 +123,15 @@ class Statistics:
         with open(f'output/{filename}', 'w') as f:
             f.write(axis)
 
+    def get_steps(self, regex, log):
+        interval_steps = self.get_matches(regex, log)
+        accumulated_steps = list(accumulate([float(step) for step in interval_steps]))
+        rounded_steps = [round(step, 2) for step in accumulated_steps]
+        return rounded_steps
+
     def save_all(self, log):
         self.base_filename = log.split('.')[0]
-        interval_steps = self.get_matches(self.interval['regex'], log)
+        interval_steps = self.get_steps(self.interval['regex'], log)
         s.initialize_coordinate_file(self.coordinates_filename())
         s.save_statistic(self.interval_writes, log, interval_steps)
         s.save_statistic(self.cumulative_writes, log, interval_steps)
