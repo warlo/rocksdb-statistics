@@ -5,6 +5,11 @@ import os
 
 class Statistics:
     def __init__(self):
+        self.interval = {
+            'name': 'Interval step',
+            'regex': 'Uptime\(secs\).*?(\d*\.\d*)\sinterval',
+            'suffix': '_intervals'
+        }
         self.interval_stall = {
             'name': 'Interval Stall',
             'regex': 'Interval\sstall.*?(\d*\.\d*)\spercent',
@@ -42,12 +47,12 @@ class Statistics:
     def coordinates_filename(self):
         return self.base_filename + '_coordinates.log'
 
-    def save_statistic(self, d, log):
+    def save_statistic(self, d, log, steps=None):
         matches = self.get_matches(d['regex'], log)
         new_filename = self.base_filename + f'{d["suffix"]}.csv'
         self.save_to_file(matches, new_filename)
 
-        coordinates = self.generate_coordinates(matches)
+        coordinates = self.generate_coordinates(matches, steps)
         self.save_coordinates_to_file(coordinates, self.coordinates_filename())
         self.legend_list.append(d["name"])
 
@@ -66,8 +71,10 @@ class Statistics:
             matches = regex.findall(f.read())
         return matches
 
-    def generate_coordinates(self, matches, step=1):
-        return [f'({i*step},{match})' for i, match in enumerate(matches)]
+    def generate_coordinates(self, matches, steps):
+        if not steps:
+            return [f'({i*1},{match})' for i, match in enumerate(matches)]
+        return [f'({key},{value})' for key, value in zip(steps, matches)]
 
     def save_to_file(self, data, filename):
         os.makedirs('output', exist_ok=True)
@@ -117,13 +124,14 @@ class Statistics:
 
     def save_all(self, log):
         self.base_filename = log.split('.')[0]
+        interval_steps = self.get_matches(self.interval['regex'], log)
         s.initialize_coordinate_file(self.coordinates_filename())
-        s.save_statistic(self.interval_writes, log)
-        s.save_statistic(self.cumulative_writes, log)
+        s.save_statistic(self.interval_writes, log, interval_steps)
+        s.save_statistic(self.cumulative_writes, log, interval_steps)
         # s.save_statistic(self.interval_stall, log)
         # s.save_statistic(self.cumulative_stall, log)
-        s.save_statistic(self.interval_compaction, log)
-        s.save_statistic(self.cumulative_compaction, log)
+        s.save_statistic(self.interval_compaction, log, interval_steps)
+        s.save_statistic(self.cumulative_compaction, log, interval_steps)
         s.append_legend(self.coordinates_filename())
 
 
