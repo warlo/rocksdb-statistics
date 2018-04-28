@@ -132,15 +132,17 @@ class Statistics:
 
     def save_all(self, log):
         self.base_filename = log.split('.')[0]
-        # interval_steps = self.get_steps(self.interval['regex'], log)
-        uptime_steps = self.get_matches(self.uptime, log)[::2]
+        interval_steps = self.get_steps(self.interval['regex'], log)
+        uptime_steps = [float(step) for step in self.get_matches(self.uptime, log)[::2]]
+        min_interval_step = uptime_steps[0] - interval_steps[0]
+        steps = [round(step - min_interval_step, 2) for step in uptime_steps]
         s.initialize_coordinate_file(self.coordinates_filename())
-        s.save_statistic(self.interval_writes, log, uptime_steps)
-        s.save_statistic(self.cumulative_writes, log, uptime_steps)
+        s.save_statistic(self.interval_writes, log, steps)
+        s.save_statistic(self.cumulative_writes, log, steps)
         # s.save_statistic(self.interval_stall, log)
         # s.save_statistic(self.cumulative_stall, log)
-        s.save_statistic(self.interval_compaction, log, uptime_steps)
-        s.save_statistic(self.cumulative_compaction, log, uptime_steps)
+        s.save_statistic(self.interval_compaction, log, steps)
+        s.save_statistic(self.cumulative_compaction, log, steps)
         s.append_legend(self.coordinates_filename())
 
 
