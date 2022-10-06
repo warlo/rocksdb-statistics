@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-import re, argparse
+import argparse
 import os
+import re
 from itertools import accumulate
 
 
@@ -80,8 +81,10 @@ class Statistics:
 
     def save_to_file(self, data, filename):
         os.makedirs('output', exist_ok=True)
-        with open(f'output/{filename}', 'w') as f:
+        file_path = f'output/{filename}'
+        with open(file_path, 'w') as f:
             f.writelines('\n'.join(data))
+        print("Saved", filename, "to", file_path)
 
     def save_coordinates_to_file(self, data, filename, last=False):
         os.makedirs('output', exist_ok=True)
