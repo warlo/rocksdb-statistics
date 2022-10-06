@@ -106,6 +106,7 @@ class Statistics:
 """)
 
     def initialize_coordinate_file(self, filename):
+        os.makedirs('output', exist_ok=True)
         axis = f"""    \\begin{{subfigure}}[t]{{0.5\\textwidth}}
     \\begin{{tikzpicture}}
 \\begin{{axis}}[
