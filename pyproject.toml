@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rocksdb-statistics"
-version = "0.0.1"
+version = "0.0.8"
 authors = [
   "Hans-Wilhelm Warlo <hw@warlo.no>"
 ]
@@ -13,7 +13,7 @@ classifiers = [
 ]
 repository = "https://github.com/warlo/rocksdb-statistics/"
 packages = [
-    { include = "rocksdb-statistics" }
+    { include = "rocksdb_statistics" }
 ]
 
 
@@ -22,6 +22,9 @@ python = "^3.7"
 black = "22.8.0"
 isort = "5.10.1"
 mypy = "0.982"
+
+[tool.poetry.scripts]
+rocksdb-statistics = "rocksdb_statistics.rocksdb_statistics:main"
 
 [build-system]
 requires = ["poetry>=1.2.0"]

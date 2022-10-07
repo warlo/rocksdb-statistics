@@ -1,8 +1,9 @@
 # rocksdb-statistics
 
-Small python script to generate basic pgfplots axes using regex
+[![PyPI version](https://badge.fury.io/py/rocksdb-statistics.svg)](https://badge.fury.io/py/rocksdb-statistics)
 
 ## Usage
 
 `pip install rocksdb-statistics`
-`python -m rocksdb-statistics db_bench.log`
+
+`rocksdb-statistics db_bench.log`
