@@ -4,47 +4,51 @@ import os
 import pathlib
 import re
 from itertools import accumulate
+from typing import TypedDict
 
 DIRNAME = pathlib.Path(__file__).parent
 
 
+class StatType(TypedDict):
+    name: str
+    regex: str
+
+
 class Statistics:
     def __init__(self) -> None:
-        self.uptime = "Uptime\(secs\).*?(\d*\.\d*)\stotal"
-        self.interval = {
-            "name": "Interval step",
-            "regex": "Uptime\(secs\).*?(\d*\.\d*)\sinterval",
-            "suffix": "_intervals",
-        }
-        self.interval_stall = {
-            "name": "Interval Stall",
-            "regex": "Interval\sstall.*?(\d*\.\d*)\spercent",
-            "suffix": "_interval_stall",
-        }
-        self.cumulative_stall = {
-            "name": "Cumulative Stall",
-            "regex": "Cumulative\sstall.*?(\d*\.\d*)\spercent",
-            "suffix": "_cumulative_stall",
-        }
-        self.interval_writes = {
-            "name": "Interval Writes",
-            "regex": "Interval\swrites.*?(\d*\.\d*)\sMB\/s",
-            "suffix": "_interval_writes",
-        }
-        self.cumulative_writes = {
-            "name": "Cumulative Writes",
-            "regex": "Cumulative\swrites.*?(\d*\.\d*)\sMB\/s",
-            "suffix": "_cumulative_writes",
-        }
-        self.cumulative_compaction = {
-            "name": "Cumulative Compaction",
-            "regex": "Cumulative\scompaction.*?(\d*\.\d*)\sMB\/s",
-            "suffix": "_cumulative_compaction",
-        }
-        self.interval_compaction = {
-            "name": "Interval Compaction",
-            "regex": "Interval\scompaction.*?(\d*\.\d*)\sMB\/s",
-            "suffix": "_interval_compaction",
+        self.stats: dict[str, StatType] = {
+            "uptime": {
+                "name": "Uptime",
+                "regex": "Uptime\(secs\).*?(\d*\.\d*)\stotal",
+            },
+            "interval": {
+                "name": "Interval step",
+                "regex": "Uptime\(secs\).*?(\d*\.\d*)\sinterval",
+            },
+            "interval_stall": {
+                "name": "Interval Stall",
+                "regex": "Interval\sstall.*?(\d*\.\d*)\spercent",
+            },
+            "cumulative_stall": {
+                "name": "Cumulative Stall",
+                "regex": "Cumulative\sstall.*?(\d*\.\d*)\spercent",
+            },
+            "interval_writes": {
+                "name": "Interval Writes",
+                "regex": "Interval\swrites.*?(\d*\.\d*)\sMB\/s",
+            },
+            "cumulative_writes": {
+                "name": "Cumulative Writes",
+                "regex": "Cumulative\swrites.*?(\d*\.\d*)\sMB\/s",
+            },
+            "cumulative_compaction": {
+                "name": "Cumulative Compaction",
+                "regex": "Cumulative\scompaction.*?(\d*\.\d*)\sMB\/s",
+            },
+            "interval_compaction": {
+                "name": "Interval Compaction",
+                "regex": "Interval\scompaction.*?(\d*\.\d*)\sMB\/s",
+            },
         }
 
         self.legend_list: list[str] = []
@@ -54,10 +58,10 @@ class Statistics:
         return self.base_filename + "_coordinates.log"
 
     def save_statistic(
-        self, d: dict[str, str], log: str, steps: list[float] | None = None
+        self, key: str, d: StatType, log: str, steps: list[float] | None = None
     ) -> None:
         matches = self.get_matches(d["regex"], log)
-        new_filename = self.base_filename + f'{d["suffix"]}'
+        new_filename = self.base_filename + f"_{key}"
         self.save_to_csv_file(matches, new_filename)
 
         coordinates = self.generate_coordinates(matches, steps)
@@ -145,21 +149,22 @@ class Statistics:
         rounded_steps = [round(step, 2) for step in accumulated_steps]
         return rounded_steps
 
-    def save_all(self, log: str) -> None:
+    def save_all(self, log: str, statistics: set[str]) -> None:
         logfile = pathlib.Path(log)
         self.base_filename = logfile.stem
-        interval_steps = self.get_steps(self.interval["regex"], log)
-        uptime_steps = [float(step) for step in self.get_matches(self.uptime, log)[::2]]
+        interval_steps = self.get_steps(self.stats["interval"]["regex"], log)
+        uptime_steps = [
+            float(step)
+            for step in self.get_matches(self.stats["uptime"]["regex"], log)[::2]
+        ]
         min_interval_step = uptime_steps[0] - interval_steps[0]
         steps = [round(step - min_interval_step, 2) for step in uptime_steps]
         self.initialize_coordinate_file(self.coordinates_filename())
 
-        self.save_statistic(self.interval_writes, log, steps)
-        self.save_statistic(self.cumulative_writes, log, steps)
-        self.save_statistic(self.interval_stall, log)
-        self.save_statistic(self.cumulative_stall, log)
-        self.save_statistic(self.interval_compaction, log, steps)
-        self.save_statistic(self.cumulative_compaction, log, steps)
+        for key, value in self.stats.items():
+            if len(statistics) > 0 and key not in statistics:
+                continue
+            self.save_statistic(key, value, log, steps)
 
         self.append_legend(self.coordinates_filename())
 
@@ -167,7 +172,18 @@ class Statistics:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("log", type=str, help="logfile")
+    parser.add_argument("--statistics", type=str, help="logfile")
     args = parser.parse_args()
     s = Statistics()
-    log = args.log
-    s.save_all(log)
+
+    statistics = (
+        {arg.strip() for arg in args.statistics.split(",")}
+        if args.statistics
+        else set()
+    )
+    if len(statistics) > 0 and not statistics.intersection(s.stats.keys()):
+        raise KeyError(
+            f"Statistic not supported, must use one or more of \"{','.join(s.stats.keys())}\""
+        )
+
+    s.save_all(args.log, statistics)

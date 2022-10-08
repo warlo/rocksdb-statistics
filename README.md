@@ -24,6 +24,9 @@ Outputs CSV-files and pgfplot of write, compaction and stall statistics.
 
 Parsed stats are outputted to `output/` in the current directory
 
+Alternatively specify what stats to output
+`rocksdb-statistics db_bench.log --statistics "interval_writes,interval_compaction"`
+
 ## Example
 
 Run db_bench with statistics using `stats_interval_seconds` to retrieve stats for each second. Make sure to set `stats_per_interval` to make db_bench output `** DB stats **` for each interval.
