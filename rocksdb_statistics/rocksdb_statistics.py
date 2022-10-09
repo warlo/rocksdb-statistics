@@ -52,6 +52,7 @@ class Statistics:
         }
 
         self.legend_list: list[str] = []
+        self.plots: list[str] = []
         self.base_filename = ""
 
     def coordinates_filename(self) -> str:
@@ -100,48 +101,37 @@ class Statistics:
     def save_coordinates_to_file(
         self, data: list[str], filename: str, last: bool = False
     ) -> None:
-        os.makedirs("output", exist_ok=True)
-        with open(f"output/{filename}", "a") as f:
-            str_data = "".join(data)
-            f.write("\\addplot\n\tcoordinates {{ {0} }};\n".format(str_data))
-            if last:
-                legend = ", ".join(self.legend_list)
-                f.write(f"\\legend{{{legend}}}\n")
+        str_data = "".join(data)
+        self.plots.append(f"\t\t\\addplot\n\tcoordinates {{ { str_data } }};\n")
 
-    def append_legend(self, filename: str) -> None:
-        with open(f"output/{filename}", "a") as f:
-            legend = ", ".join(self.legend_list)
-            f.write(
-                f"""
-\\legend{{{legend}}}
-\\end{{axis}}
-    \\end{{tikzpicture}}
-    \\end{{subfigure}}
-"""
-            )
-
-    def initialize_coordinate_file(self, filename: str) -> None:
+    def save_coordinate_file(self, filename: str) -> None:
         os.makedirs("output", exist_ok=True)
-        axis = f"""    \\begin{{subfigure}}[t]{{0.5\\textwidth}}
-    \\begin{{tikzpicture}}
-\\begin{{axis}}[
-    title={self.base_filename},
-    xlabel={{}},
-    ylabel={{MB/s}},
-    ymin=0,
-    ymax=250,
-    ytick={{0,50,...,300}},
-    width=\\textwidth,
-    legend style={{
-        at={{(0.5,-0.2)}},
-        anchor=north,legend columns=1
-    }},
-    ymajorgrids=true,
-    grid style=dashed,
-]
+        axis = f"""
+\\begin{{tikzpicture}}
+    \\begin{{axis}}[
+        title={self.base_filename.replace("_", " ")},
+        xlabel={{}},
+        ylabel={{MB/s}},
+        legend style={{
+            at={{(0.5,-0.2)}},
+            anchor=north,legend columns=1
+        }},
+        ymajorgrids=true,
+        grid style=dashed,
+    ]
 """
         with open(f"output/{filename}", "w") as f:
             f.write(axis)
+            for plot in self.plots:
+                f.write(plot)
+            legend = ", ".join(self.legend_list)
+            f.write(
+                f"""
+    \\legend{{{legend}}}
+    \\end{{axis}}
+\\end{{tikzpicture}}
+"""
+            )
 
     def get_steps(self, pattern: str, log: str) -> list[float]:
         interval_steps = self.get_matches(pattern, log)[::2]
@@ -159,14 +149,13 @@ class Statistics:
         ]
         min_interval_step = uptime_steps[0] - interval_steps[0]
         steps = [round(step - min_interval_step, 2) for step in uptime_steps]
-        self.initialize_coordinate_file(self.coordinates_filename())
 
         for key, value in self.stats.items():
             if len(statistics) > 0 and key not in statistics:
                 continue
             self.save_statistic(key, value, log, steps)
 
-        self.append_legend(self.coordinates_filename())
+        self.save_coordinate_file(self.coordinates_filename())
 
 
 def main() -> None:
