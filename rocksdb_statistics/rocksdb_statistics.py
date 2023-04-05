@@ -49,6 +49,106 @@ class Statistics:
                 "name": "Interval Compaction",
                 "regex": "Interval\scompaction.*?(\d*\.\d*)\sMB\/s",
             },
+            "cumulative_wal": {
+                "name": "Cumulative WAL",
+                "regex": "Cumulative\sWAL.*?(\d*\.\d*)\swrites", 
+            },
+            "interval_wal": {
+                "name": "Interval WAL",
+                "regex": "Interval\sWAL.*?(\d*\.\d*)\swrites", 
+            }, 
+            "cumulative_flush": {
+                "name": "Cumulative Flush",
+                "regex": "Flush.*?(\d*\.\d*),", 
+            }, 
+            "interval_flush": {
+                "name": "Interval Flush",
+                "regex": "Flush.*?interval\s(\d*\.\d*)", 
+            }, 
+            "add_file_cumulative": {
+                "name": "AddFile (GB) Cumulative",
+                "regex": "AddFile\(GB\).*?\s(\d*\.\d*),", 
+            }, 
+            "add_file_interval": {
+                "name": "AddFile (GB) Interval",
+                "regex": "AddFile\(GB\).*?interval\s(\d*\.\d*)", 
+            }, 
+            "delays_with_ongoing_compaction": {
+                "name": "cf-l0-file-count-limit-delays-with-ongoing-compaction",
+                "regex": "cf-l0-file-count-limit-delays-with-ongoing-compaction.*?(\d),", 
+            }, 
+            "stops_with_ongoing_compaction": {
+                "name": "cf-l0-file-count-limit-stops-with-ongoing-compaction",
+                "regex": "cf-l0-file-count-limit-stops-with-ongoing-compaction.*?(\d),", 
+            }, 
+            "l0_file_count_limit_delays": {
+                "name": "l0-file-count-limit-delays",
+                "regex": "l0-file-count-limit-delays\:.*?(\d),", 
+            }, 
+            "l0_file_count_limit_stops": {
+                "name": "l0-file-count-limit-stops",
+                "regex": "l0-file-count-limit-stops\:.*?(\d),", 
+            }, 
+            "memtable_limit_delays": {
+                "name": "memtable-limit-delays",
+                "regex": "memtable-limit-delays\:.*?(\d),", 
+            }, 
+            "memtable_limit_stops": {
+                "name": "memtable-limit-stops",
+                "regex": "memtable-limit-stops\:.*?(\d),", 
+            }, 
+            "pending_compaction_bytes_delays": {
+                "name": "pending-compaction-bytes-delays",
+                "regex": "pending-compaction-bytes-delays\:.*?(\d),", 
+            }, 
+            "pending_compaction_bytes_stops": {
+                "name": "pending-compaction-bytes-stops",
+                "regex": "pending-compaction-bytes-stops\:.*?(\d),", 
+            }, 
+            "total_delays": {
+                "name": "total-delays",
+                "regex": "total-delays\:.*?(\d),", 
+            }, 
+            "total_stops": {
+                "name": "total-stops",
+                "regex": "total-stops\:.*?(\d),", 
+            }, 
+            "l0_files": {
+                "name": "L0 Files",
+                "regex": "L0.*?(\d)\/", 
+            }, 
+            "l0_size": {
+                "name": "L0 Size",
+                "regex": "L0.*?(\d*\.\d*)\sMB", 
+            }, 
+            "num_running_compactions": {
+                "name": "num-running-compactions",
+                "regex": "num-running-compactions.*?(\d)", 
+            }, 
+            "num_running_flushes": {
+                "name": "num-running-flushes",
+                "regex": "num-running-flushes.*?(\d)", 
+            },  
+            "p99.99": {
+                "name": "P99.99",
+                "regex": "P99\.99.*?(\d*\.\d*)", 
+            },  
+            "p99.9": {
+                "name": "P99.9",
+                "regex": "P99\.9.*?(\d*\.\d*)\sP", 
+            },  
+            "p99": {
+                "name": "P99",
+                "regex": "P99.*?(\d*\.\d*)\sP", 
+            },  
+            "p75": {
+                "name": "P75",
+                "regex": "P75.*?(\d*\.\d*)\sP", 
+            },  
+            "p50": {
+                "name": "P50",
+                "regex": "P50.*?(\d*\.\d*)\sP", 
+            },  
         }
 
         self.legend_list: list[str] = []
