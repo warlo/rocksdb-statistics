@@ -15,6 +15,31 @@ Outputs CSV-files and pgfplot of write, compaction and stall statistics.
 - cumulative_stall
 - interval_compaction
 - cumulative_compaction
+- cumulative_wal
+- interval_wal
+- cumulative_flush
+- interval_flush
+- add_file_cumulative
+- add_file_interval
+- delays_with_ongoing_compaction
+- stops_with_ongoing_compaction
+- l0_file_count_limit_delays
+- l0_file_count_limit_stops
+- memtable_limit_delays
+- memtable_limit_stops
+- pending_compaction_bytes_delays
+- pending_compaction_bytes_stops
+- total_delays
+- total_stops
+- l0_files
+- l0_size
+- num_running_compactions
+- num_running_flushes
+- p99.99
+- p99.9
+- p99
+- p75
+- p50
 
 ## Usage
 
