@@ -149,6 +149,38 @@ class Statistics:
                 "name": "P50",
                 "regex": "P50.*?(\d*\.\d*)\sP", 
             },  
+            "L0_P99.99": {
+                "name": "L0 P99.99",
+                "regex": "Level\s0\sread\slatency.*?\s.*?\s.*?\s.*?\sP99\.99.*?(\d*\.\d*)", 
+            },  
+            "L1_P99.99": {
+                "name": "L1 P99.99",
+                "regex": "Level\s1\sread\slatency.*?\s.*?\s.*?\s.*?\sP99\.99.*?(\d*\.\d*)", 
+            },  
+            "L2_P99.99": {
+                "name": "L2 P99.99",
+                "regex": "Level\s2\sread\slatency.*?\s.*?\s.*?\s.*?\sP99\.99.*?(\d*\.\d*)",
+            }, 
+            "L3_P99.99": {
+                "name": "L3 P99.99",
+                "regex": "Level\s3\sread\slatency.*?\s.*?\s.*?\s.*?\sP99\.99.*?(\d*\.\d*)",
+            }, 
+            "L4_P99.99": {
+                "name": "L4 P99.99",
+                "regex": "Level\s4\sread\slatency.*?\s.*?\s.*?\s.*?\sP99\.99.*?(\d*\.\d*)",
+            }, 
+            "L5_P99.99": {
+                "name": "L5 P99.99",
+                "regex": "Level\s5\sread\slatency.*?\s.*?\s.*?\s.*?\sP99\.99.*?(\d*\.\d*)",
+            }, 
+            "L6_P99.99": {
+                "name": "L6 P99.99",
+                "regex": "Level\s6\sread\slatency.*?\s.*?\s.*?\s.*?\sP99\.99.*?(\d*\.\d*)",
+            }, 
+            "L7_P99.99": {
+                "name": "L7 P99.99",
+                "regex": "Level\s7\sread\slatency.*?\s.*?\s.*?\s.*?\sP99\.99.*?(\d*\.\d*)",
+            },
         }
 
         self.legend_list: list[str] = []
