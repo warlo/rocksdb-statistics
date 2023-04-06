@@ -40,6 +40,14 @@ Outputs CSV-files and pgfplot of write, compaction and stall statistics.
 - p99
 - p75
 - p50
+- L0_P99.99
+- L1_P99.99
+- L2_P99.99
+- L3_P99.99
+- L4_P99.99
+- L5_P99.99
+- L6_P99.99
+- L7_P99.99
 
 ## Usage
 
